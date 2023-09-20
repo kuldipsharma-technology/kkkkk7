@@ -1,30 +1,24 @@
-pipeline 
-
-{
-    agent any
-
+ pipeline { 
+    agent any 
+    options {
+        skipStagesAfterUnstable()
+    }
     stages {
-        stage('Build') {
-            steps {
-                echo 'Build World'
+        stage('Build') { 
+            steps { 
+                sh 'make' 
             }
         }
-		stage('Deploy') {
+        stage('Test'){
             steps {
-                echo 'Deploy World'
+                sh 'make check'
+                junit 'reports/**/*.xml' 
             }
         }
-		stage('Test') {
+        stage('Deploy') {
             steps {
-                echo 'Test World'
+                sh 'make publish'
             }
         }
     }
-	post
-	{
-		always
-		{
-			emailext body: 'Summary', subject: 'Pipeline Status', to: 'kuldipsharma888@gmail.com'
-		}
-	}
 }
